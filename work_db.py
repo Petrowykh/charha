@@ -18,15 +18,12 @@ class Baza:
     
     def check_user(self, user_id):
         # проверка наличия юзера
-        flag = False
-        #print (user_id)
         with self.connection:
             temp = self.cursor.execute("SELECT * FROM users WHERE id = ?", (user_id, )).fetchone()
-            #print ('See..', temp)
-            if temp != None:
-                flag = True
-        print(temp, flag)
-        return flag
+        if temp:
+            return True
+        else: 
+            return False
     
     def add_user(self, user_id, name):
         # добавляем юзера
@@ -75,14 +72,13 @@ class Baza:
         with self.connection:
             # проверим, если инфо по магазину
             info_shop = self.cursor.execute("SELECT hours FROM fine_hours WHERE id_shop = ?", (shop,)).fetchone()
-            #print (info_shop[0])
+            
             fine_hours_tuple = {period: cars}
             if info_shop == None:
                 return self.cursor.execute("INSERT INTO fine_hours (id_shop, hours) VALUES (?, ?)",
                 (shop, json.dumps(fine_hours_tuple)))
             else:
                 decode = json.loads(info_shop[0])
-                # print ('Смотрим данные ', decode)
                 if str(period) in decode:
                     # если есть уже статистика за этот период
                     decode[str(period)] = int((cars + decode[str(period)])/2)

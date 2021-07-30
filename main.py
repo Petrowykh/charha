@@ -30,14 +30,14 @@ chat = 'https://t.me/CharhaChat'
 async def start_command(message: types.Message):
     if baza.check_user(int(message.from_user.id)):
         cu, cs = baza.get_count_user_shops()
-        greeting_message = '\nВ Боте зарегистрировано <B>' + str(cu) + '</B> 👨‍🚀 пользователей\n'
-        greeting_message = greeting_message + 'Есть информация по <B>'+ str(cs) + '</B> 🏬 магазинам' 
+        greeting_message = f'\nВ Боте зарегистрировано <B> {cu} </B> 👨‍🚀 пользователей\n'
+        greeting_message = greeting_message + f'Есть информация по <B> {cs}</B> 🏬 магазинам' 
         greeting_message = greeting_message + '\nОбсуждение :' + chat
     else:
         greeting_message = "\nВы впервые у нас. Бот находится в стадии тестирования. Все вопросы и замечания можно обсудить в " + chat
         greeting_message = greeting_message + 'Бот предоставлет информацию об очередях в торговых объектах г.Минска, а также готов принять Вашу информацию. \nСделайте выбор...👇'
         baza.add_user(int(message.from_user.id), message.from_user.username)
-    await bot.send_message(message.from_user.id, 'Привет,' + str(message.from_user.username) + greeting_message, reply_markup=kb.kb1)
+    await bot.send_message(message.from_user.id, f'Привет, {message.from_user.username}' + greeting_message, reply_markup=kb.kb1)
 
 
 @dp.message_handler(lambda message: message.text == 'Информация ℹ')
@@ -54,10 +54,9 @@ async def get_location(message: types.Message, state: FSMContext):
     ikb = InlineKeyboardMarkup()
     data_shop = baza.search_shops(message.location['latitude'], message.location['longitude'])
     # TO DO много магазинов
-    # print (data_shop)
-    if data_shop != []:
+    if data_shop:
         #TODO магазинов может быть много
-        shop_button_ikb = InlineKeyboardButton('📌 ' + data_shop[0][2] + ' ' + data_shop[0][1], callback_data=data_shop[0][0])
+        shop_button_ikb = InlineKeyboardButton(f'📌 {data_shop[0][1]}', callback_data=data_shop[0][0])
         # название магазина и адрес лепим на кнопку
         ikb.add(shop_button_ikb)
         async with state.proxy() as td:
@@ -85,7 +84,7 @@ async def save_reg_ikb3(callback_region: types.CallbackQuery, state:FSMContext):
             ikb4.add(net_but[0], net_but[1])
             net_but = []
             check = 0
-    if net_but != []:
+    if net_but:
         ikb4.add(net_but[0])
     await bot.send_message(callback_region.from_user.id, 'Выбираем сеть', reply_markup=ikb4)
 
@@ -98,7 +97,6 @@ async def save_net_ikb4(callback_net: types.CallbackQuery, state:FSMContext):
     ikb5 = InlineKeyboardMarkup(resizekeyboard=True)
     list_address = baza.get_address_shop(region, net_ok)
     for i in list_address:
-        print (i)
         cbd = 'addr' + str(i[0])
         addr_but = InlineKeyboardButton(i[1], callback_data=cbd)
         ikb5.add(addr_but)
@@ -113,8 +111,8 @@ async def info_about_shop(callback_addr: types.CallbackQuery, state:FSMContext):
     print (statistic)
     info = baza.get_info_shop(id_shop)
     await bot.send_photo(callback_addr.from_user.id, str(info[5]), str(info[1]))
-    answer_to_user = "📭 Адрес :" + str(info[0]) 
-    time_to = "\n🕑 Время работы: <B>" + str(info[2]) + ".00 -" + str(info[3]) + ".00</B>"
+    answer_to_user = f'📭 Адрес : {info[0]}' 
+    time_to = f'\n🕑 Время работы: <B> {info[2]}.00 - {info[3]}.00</B>'
     # time_to = time_to + "\n👩🏻‍🦳 Приемка: нет данных" пока убираем
     time_to = time_to + "\n🛌 Ночная приемка : "
     if info[4]:
@@ -127,21 +125,21 @@ async def info_about_shop(callback_addr: types.CallbackQuery, state:FSMContext):
     else:
         time_to = time_to + '🚫'
     stroka = '\n🚚 <U>Прогноз по времени:</U>\n'
-    if statistic != None:
+    if statistic:
         fine_hours = json.loads(statistic[0])
         for i in range(0,23):
             if str(i) in fine_hours.keys():
-                stroka = stroka + str(i) + ':00- ' + str(i+1) + ':00 : <B>' + str(fine_hours[str(i)]) + '</B>\n'
+                stroka = stroka + f'{i}:00-{i+1}:00 : <B>{fine_hours[str(i)]}</B>\n'
     else:
         stroka = stroka + 'Нет информации\n'
     request_user = baza.get_request_count(id_shop)
     if request_user > 1:
-        req = "\n❓ Запросов по магазину :" + str(request_user-1)
+        req = "\n❓ Запросов по магазину :" + str(request_user-1) # -1 потом что запрос тоже уже учтен
     else:
         req = "\n❓ За последние 2 часа запросов не было"
     charha = baza.get_info_charha(id_shop)
     if charha != None:
-        ch = "\nℹ Информация за последний час - " + str(charha[0]) + " 🚛"
+        ch = f'\nℹ Информация за последний час - {charha[0]} 🚛'
     else:
         ch = "\nℹ Онлайн информации нет 🏳"
     answer = answer_to_user + time_to + stroka + req + ch
