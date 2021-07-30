@@ -25,11 +25,11 @@ dp = Dispatcher(bot, storage=storage)
 baza = Baza('db/charhadb.db')
 chat = 'https://t.me/CharhaChat'
 
-DELAY = 60
+DELAY = 60*60
 
 async def send_smile():
     baza.delete_events()
-    await bot.send_message('455245688', 'Очищаем БД events')
+    await bot.send_message('455245688', 'У меня все хорошо. Очищаем БД events')
 
 def repeat(coro, loop):
     asyncio.ensure_future(coro(), loop=loop)
