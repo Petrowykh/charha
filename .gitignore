@@ -18,6 +18,7 @@ var/
 .installed.cfg
 *.egg
 venv
+db/
 
 # Installer logs
 pip-log.txt
