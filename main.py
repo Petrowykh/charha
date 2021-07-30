@@ -55,10 +55,9 @@ async def get_location(message: types.Message):
     data_shop = baza.search_shops(message.location['latitude'], message.location['longitude'])
     if data_shop:
         for i in data_shop:
-            shop_button_ikb = InlineKeyboardButton(f'📌 {i[1]}', callback_data='shop' + str(i[0]))
-        # название магазина и адрес лепим на кнопку
+            shop_button_ikb = InlineKeyboardButton(f'📌 {i[2]} - {i[1]}', callback_data='shop' + str(i[0]))
             ikb4.add(shop_button_ikb)
-        await bot.send_message(message.from_user.id, 'По данным геолокации рядом с Вами', reply_markup=ikb4)
+        await bot.send_message(message.from_user.id, 'По данным геолокации рядом с Вами..', reply_markup=ikb4)
     else:
         await bot.send_message(message.from_user.id, 'К сожалению 😡, в базе нет рядом магазинов, нажмите "Информация"', reply_markup=kb.kb1) 
 
@@ -74,7 +73,6 @@ async def choose_shop(callback_shop: types.CallbackQuery, state:FSMContext):
 
 @dp.callback_query_handler(lambda car: car.data.startswith('car'))
 async def save_car_ikb2(callback_car: types.CallbackQuery, state: FSMContext):
-    #global g_shop_id
     car_ok = int(callback_car.data[-1])
     if car_ok > 1:
         car_ok = car_ok * 2 # пока что просто умножаем на 2, далее продумать алгоритм
@@ -107,7 +105,9 @@ async def save_reg_ikb3(callback_region: types.CallbackQuery, state:FSMContext):
             check = 0
     if net_but:
         ikb4.add(net_but[0])
-    await bot.send_message(callback_region.from_user.id, 'Выбираем сеть', reply_markup=ikb4)
+        ikb4.add(InlineKeyboardButton('ОБЫЧНЫЙ', callback_data='netAS'))
+    await bot.send_message(callback_region.from_user.id, 'Выбираем сеть, либо "ОБЫЧНЫЙ"', reply_markup=ikb4)
+
 
 @dp.callback_query_handler(lambda net: net.data.startswith('net'))
 # обрабатываем выбор сети и делаем инлайн клаву с адресами
@@ -116,12 +116,15 @@ async def save_net_ikb4(callback_net: types.CallbackQuery, state:FSMContext):
     async with state.proxy() as td:
         region = td['region']
     ikb5 = InlineKeyboardMarkup(resizekeyboard=True)
-    list_address = baza.get_address_shop(region, net_ok)
+    if net_ok != 'AS':
+        list_address = baza.get_address_shop(region, net_ok, True)
+    else:
+        list_address = baza.get_address_shop(region, net_ok, False)
+    print (list_address)
     for i in list_address:
-        cbd = 'addr' + str(i[0])
-        addr_but = InlineKeyboardButton(i[1], callback_data=cbd)
-        ikb5.add(addr_but)
+        ikb5.add(InlineKeyboardButton(f'📌 {i[2]} {i[1]}', callback_data='addr' + str(i[0])))
     await bot.send_message(callback_net.from_user.id, 'Выбираем адрес', reply_markup=ikb5)
+
 
 @dp.callback_query_handler(lambda addr: addr.data.startswith('addr'))
 # Обрабатываем адрес и выводим информацию
@@ -170,7 +173,7 @@ async def info_about_shop(callback_addr: types.CallbackQuery, state:FSMContext):
 @dp.callback_query_handler()
 # обработчик инлайн клавы с количетсвом машинок
 async def enter_cars(message: types.Message):
-    await bot.send_message(message.from_user.id,'Ну как?', reply_markup=kb.ikb2)
+    await bot.send_message(message.from_user.id,'Ну как?', reply_markup=kb.kb1)
 
 if __name__ == '__main__':
     executor.start_polling(dp)

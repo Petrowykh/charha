@@ -56,7 +56,7 @@ class Baza:
             long_down = round(long_ - 0.003, 3)
             long_up = round(long_ + 0.003, 3)
             # 0,003 оптимальная цифра в радиусе 200м
-            return self.cursor.execute("SELECT id, address, short, icon FROM shops WHERE (latitude BETWEEN ? AND ?) AND (longitude BETWEEN ? AND ? )", 
+            return self.cursor.execute("SELECT id, address, short FROM shops WHERE (latitude BETWEEN ? AND ?) AND (longitude BETWEEN ? AND ? )", 
             (lat_down, lat_up, long_down, long_up)).fetchall()
 
             
@@ -86,17 +86,20 @@ class Baza:
                     decode[str(period)] = cars
                 return self.cursor.execute("UPDATE fine_hours SET hours = ? WHERE id_shop = ?", (json.dumps(decode), shop))
 
-    def get_address_shop(self, region, net):
-        # ищем адреса магазинов, если введен регион и название сети
-        #TODO потом нужно исправить short на название сети в БД
-        with self.connection:
-            region = int(region)
-            return self.cursor.execute("SELECT id, address FROM shops WHERE (region = ? AND short = ?)", (region, net)).fetchall()
-
     def get_name_net(self, region):
         # выдаем название всех сетей в регионе
         with self.connection:
-            return self.cursor.execute("SELECT DISTINCT short FROM shops WHERE region=?", (region,)).fetchall()
+            return self.cursor.execute("SELECT DISTINCT short FROM shops WHERE region=? AND net=True", (region,)).fetchall()
+    
+    def get_address_shop(self, region, net, flag):
+        # ищем адреса магазинов, если введен регион и название сети
+        #TODO потом нужно исправить short на название сети в БД
+        with self.connection:
+            if flag:
+                return self.cursor.execute("SELECT id, address, short FROM shops WHERE (region = ? AND short = ? AND net = ?)", (int(region), net, flag)).fetchall()
+            else:
+                return self.cursor.execute("SELECT id, address, short FROM shops WHERE (region = ? AND net = ?)", (int(region), flag)).fetchall()
+
 
     def get_statistic_shop(self, id):
         # получаем статистику по ID магазина
