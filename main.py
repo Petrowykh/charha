@@ -48,23 +48,44 @@ async def info_shops(message: types.Message):
 
 @dp.message_handler(content_types=['location'])
 # обработчик нажатия 'location'
-async def get_location(message: types.Message, state: FSMContext):
+async def get_location(message: types.Message):
     #global g_shop_id # будем использовать глобальную переменную для передачи из второго меню id магазина
     await bot.delete_message(message.chat.id, message.message_id) # удаляем сообщение с локацией
-    ikb = InlineKeyboardMarkup()
+    ikb4 = InlineKeyboardMarkup()
     data_shop = baza.search_shops(message.location['latitude'], message.location['longitude'])
-    # TO DO много магазинов
     if data_shop:
-        #TODO магазинов может быть много
-        shop_button_ikb = InlineKeyboardButton(f'📌 {data_shop[0][1]}', callback_data=data_shop[0][0])
+        for i in data_shop:
+            shop_button_ikb = InlineKeyboardButton(f'📌 {i[1]}', callback_data='shop' + str(i[0]))
         # название магазина и адрес лепим на кнопку
-        ikb.add(shop_button_ikb)
-        async with state.proxy() as td:
-            td['shop_id'] = data_shop[0][0]
-        await bot.send_message(message.from_user.id, 'По данным геолокации рядом с Вами', reply_markup=ikb)
-        
+            ikb4.add(shop_button_ikb)
+        await bot.send_message(message.from_user.id, 'По данным геолокации рядом с Вами', reply_markup=ikb4)
     else:
         await bot.send_message(message.from_user.id, 'К сожалению 😡, в базе нет рядом магазинов, нажмите "Информация"', reply_markup=kb.kb1) 
+
+
+@dp.callback_query_handler(lambda shop: shop.data.startswith('shop'))
+# если магазинов много - выбираем id
+async def choose_shop(callback_shop: types.CallbackQuery, state:FSMContext):
+    shop_ok = int(callback_shop.data[4:])
+    async with state.proxy() as td:
+        td['shop_id'] = shop_ok
+    await bot.send_message(callback_shop.from_user.id, 'Как обстановка?', reply_markup=kb.ikb2)
+
+
+@dp.callback_query_handler(lambda car: car.data.startswith('car'))
+async def save_car_ikb2(callback_car: types.CallbackQuery, state: FSMContext):
+    #global g_shop_id
+    car_ok = int(callback_car.data[-1])
+    if car_ok > 1:
+        car_ok = car_ok * 2 # пока что просто умножаем на 2, далее продумать алгоритм
+    #TODO добавить алгоритм учета правильного выставления машинок по количетсву
+    async with state.proxy() as td:
+        id_shop = td['shop_id']
+    baza.add_events(callback_car.from_user.id, id_shop, car_ok, True)
+    period = datetime.now().hour
+    baza.create_finehours_shop(id_shop, period, car_ok)
+    await bot.send_message(callback_car.from_user.id, 'Благодарим за информацию!', reply_markup=kb.kb1)
+
 
 @dp.callback_query_handler(lambda region: region.data.startswith('reg'))
 # обрабатываем ввод региона и делаем инлайн клаву по сетям
@@ -143,21 +164,7 @@ async def info_about_shop(callback_addr: types.CallbackQuery, state:FSMContext):
     else:
         ch = "\nℹ Онлайн информации нет 🏳"
     answer = answer_to_user + time_to + stroka + req + ch
-    await bot.send_message(callback_addr.from_user.id, answer, reply_markup=kb.kb1)
-
-@dp.callback_query_handler(lambda car: car.data.startswith('car'))
-async def save_car_ikb2(callback_car: types.CallbackQuery, state: FSMContext):
-    #global g_shop_id
-    car_ok = int(callback_car.data[-1])
-    if car_ok > 1:
-        car_ok = car_ok * 2 # пока что просто умножаем на 2, далее продумать алгоритм
-    #TODO добавить алгоритм учета правильного выставления машинок по количетсву
-    async with state.proxy() as td:
-        id_shop = td['shop_id']
-    baza.add_events(callback_car.from_user.id, id_shop, car_ok, True)
-    period = datetime.now().hour
-    baza.create_finehours_shop(id_shop, period, car_ok)
-    await bot.send_message(callback_car.from_user.id, 'Благодарим за информацию!', reply_markup=kb.kb1) 
+    await bot.send_message(callback_addr.from_user.id, answer, reply_markup=kb.kb1) 
 
 
 @dp.callback_query_handler()
