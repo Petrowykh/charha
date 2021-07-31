@@ -122,3 +122,9 @@ class Baza:
         with self.connection:
             time_period = datetime.now() - timedelta(hours=delta_info) # delta_info пока равно 1 часу
             return self.connection.execute("SELECT cars FROM events WHERE (id_shop=? AND info=True AND date>?) ORDER BY date DESC", (id_shop, time_period)).fetchone()
+
+    
+    def delete_events(self):
+        with self.connection:
+            time_period = datetime.now() - timedelta(days=1) # будем чистить сообщения старше 3 часов
+            return self.connection.execute("DELETE FROM events WHERE date<?", (time_period,))

@@ -9,7 +9,7 @@ from aiogram.types.inline_keyboard import InlineKeyboardButton, InlineKeyboardMa
 from aiogram.types.message import ParseMode
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-import logging, json
+import logging, json, asyncio
 
 # from attr import field
 from config import TOKEN
@@ -25,6 +25,16 @@ dp = Dispatcher(bot, storage=storage)
 baza = Baza('db/charhadb.db')
 chat = 'https://t.me/CharhaChat'
 
+DELAY = 60
+
+async def send_smile():
+    baza.delete_events()
+    await bot.send_message('455245688', 'Очищаем БД events')
+
+def repeat(coro, loop):
+    asyncio.ensure_future(coro(), loop=loop)
+    loop.call_later(DELAY, repeat, coro, loop)
+
 @dp.message_handler(commands=['start'])
 # вывод меню по команде 'start'
 async def start_command(message: types.Message):
@@ -33,6 +43,8 @@ async def start_command(message: types.Message):
         greeting_message = f'\nВ Боте зарегистрировано <B> {cu} </B> 👨‍🚀 пользователей\n'
         greeting_message = greeting_message + f'Есть информация по <B> {cs}</B> 🏬 магазинам' 
         greeting_message = greeting_message + '\nОбсуждение :' + chat
+        print (message.from_user.id)
+
     else:
         greeting_message = "\nВы впервые у нас. Бот находится в стадии тестирования. Все вопросы и замечания можно обсудить в " + chat
         greeting_message = greeting_message + 'Бот предоставлет информацию об очередях в торговых объектах г.Минска, а также готов принять Вашу информацию. \nСделайте выбор...👇'
@@ -176,4 +188,6 @@ async def enter_cars(message: types.Message):
     await bot.send_message(message.from_user.id,'Ну как?', reply_markup=kb.kb1)
 
 if __name__ == '__main__':
+    loop = asyncio.get_event_loop()
+    loop.call_later(DELAY, repeat, send_smile, loop)
     executor.start_polling(dp)
