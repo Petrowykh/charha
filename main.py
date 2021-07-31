@@ -43,8 +43,6 @@ async def start_command(message: types.Message):
         greeting_message = f'\nВ Боте зарегистрировано <B> {cu} </B> 👨‍🚀 пользователей\n'
         greeting_message = greeting_message + f'Есть информация по <B> {cs}</B> 🏬 магазинам' 
         greeting_message = greeting_message + '\nОбсуждение :' + chat
-        print (message.from_user.id)
-
     else:
         greeting_message = "\nВы впервые у нас. Бот находится в стадии тестирования. Все вопросы и замечания можно обсудить в " + chat
         greeting_message = greeting_message + 'Бот предоставлет информацию об очередях в торговых объектах г.Минска, а также готов принять Вашу информацию. \nСделайте выбор...👇'
@@ -132,7 +130,6 @@ async def save_net_ikb4(callback_net: types.CallbackQuery, state:FSMContext):
         list_address = baza.get_address_shop(region, net_ok, True)
     else:
         list_address = baza.get_address_shop(region, net_ok, False)
-    print (list_address)
     for i in list_address:
         ikb5.add(InlineKeyboardButton(f'📌 {i[2]} {i[1]}', callback_data='addr' + str(i[0])))
     await bot.send_message(callback_net.from_user.id, 'Выбираем адрес', reply_markup=ikb5)
@@ -144,7 +141,6 @@ async def info_about_shop(callback_addr: types.CallbackQuery, state:FSMContext):
     id_shop = int(callback_addr.data[4:])
     baza.add_events(callback_addr.from_user.id, id_shop, 0, False)
     statistic = baza.get_statistic_shop(id_shop)
-    print (statistic)
     info = baza.get_info_shop(id_shop)
     await bot.send_photo(callback_addr.from_user.id, str(info[5]), str(info[1]))
     answer_to_user = f'📭 Адрес : {info[0]}' 
