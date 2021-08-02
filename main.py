@@ -29,8 +29,8 @@ DELAY = 60*60
 
 async def send_smile():
     baza.delete_events()
-    cu, cs = baza.get_count_user_shops
-    await bot.send_message('455245688', 'В БД {cu} 👨‍🚀 и {cs} 🏬\n Очищаем БД events')
+    cu, cs = baza.get_count_user_shops()
+    await bot.send_message('455245688', f'В БД {cu} 👨‍🚀 и {cs} 🏬\n Очищаем БД events')
 
 def repeat(coro, loop):
     asyncio.ensure_future(coro(), loop=loop)
