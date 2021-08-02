@@ -42,7 +42,7 @@ async def start_command(message: types.Message):
     if baza.check_user(int(message.from_user.id)):
         cu, cs = baza.get_count_user_shops()
         greeting_message = f'\nВ Боте зарегистрировано <B> {cu} </B> 👨‍🚀 пользователей\n'
-        greeting_message = greeting_message + f'Есть информация по <B> {cs}</B> 🏬 магазинам' 
+        greeting_message = greeting_message + f'Есть информация по <B> {cs}</B> 🏬 торговым объектам' 
         greeting_message = greeting_message + '\nОбсуждение :' + chat
     else:
         greeting_message = "\nВы впервые у нас. Бот находится в стадии тестирования. Все вопросы и замечания можно обсудить в " + chat
