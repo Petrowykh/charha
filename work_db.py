@@ -40,12 +40,12 @@ class Baza:
                 count = count + 1
             return self.cursor.execute("UPDATE users SET count_info=?, last=? WHERE id=?", (count, datetime.now(), user))
             
-    def get_count_user_shops (self):
-        # выдаем счетчик пользователей и количетсво магазинов в базе
-        with self.connection:
-            count_users = self.cursor.execute("SELECT COUNT(*) FROM users").fetchone()[0]
-            count_shops = self.cursor.execute("SELECT COUNT(*) FROM shops").fetchone()[0]
-        return count_users, count_shops
+    # def get_count_user_shops (self):
+    #     # выдаем счетчик пользователей и количетсво магазинов в базе
+    #     with self.connection:
+    #         count_users = self.cursor.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+    #         count_shops = self.cursor.execute("SELECT COUNT(*) FROM shops").fetchone()[0]
+    #     return count_users, count_shops
             
 
     def search_shops(self, lat_, long_):
@@ -130,7 +130,10 @@ class Baza:
             return self.connection.execute("DELETE FROM events WHERE date<?", (time_period,))
 
     def info_admin(self):
+        # информация для админа
         with self.connection:
-            info_true = self.connection.execute("SELECT COUNT(*) FROM events WHERE info=True")
-            info_false = self.connection.execute("SELECT COUNT(*) FROM events WHERE info=False")
-            return info_true, info_false
+            count_users = self.cursor.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+            count_shops = self.cursor.execute("SELECT COUNT(*) FROM shops").fetchone()[0]
+            info_true = self.connection.execute("SELECT COUNT(*) FROM events WHERE info=True").fetchone()[0]
+            info_false = self.connection.execute("SELECT COUNT(*) FROM events WHERE info=False").fetchone()[0]
+            return count_users, count_shops, info_true, info_false
