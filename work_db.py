@@ -126,5 +126,11 @@ class Baza:
     
     def delete_events(self):
         with self.connection:
-            time_period = datetime.now() - timedelta(days=1) # будем чистить сообщения старше 3 часов
+            time_period = datetime.now() - timedelta(days=1) # будем чистить сообщения старше 1 дня
             return self.connection.execute("DELETE FROM events WHERE date<?", (time_period,))
+
+    def info_admin(self):
+        with self.connection:
+            info_true = self.connection.execute("SELECT COUNT(*) FROM events WHERE info=True")
+            info_false = self.connection.execute("SELECT COUNT(*) FROM events WHERE info=False")
+            return info_true, info_false
