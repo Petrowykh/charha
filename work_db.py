@@ -40,12 +40,12 @@ class Baza:
                 count = count + 1
             return self.cursor.execute("UPDATE users SET count_info=?, last=? WHERE id=?", (count, datetime.now(), user))
             
-    # def get_count_user_shops (self):
-    #     # выдаем счетчик пользователей и количетсво магазинов в базе
-    #     with self.connection:
-    #         count_users = self.cursor.execute("SELECT COUNT(*) FROM users").fetchone()[0]
-    #         count_shops = self.cursor.execute("SELECT COUNT(*) FROM shops").fetchone()[0]
-    #     return count_users, count_shops
+    def get_count_user_shops (self):
+        # выдаем счетчик пользователей и количетсво магазинов в базе
+        with self.connection:
+            count_users = self.cursor.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+            count_shops = self.cursor.execute("SELECT COUNT(*) FROM shops").fetchone()[0]
+        return count_users, count_shops
             
 
     def search_shops(self, lat_, long_):
