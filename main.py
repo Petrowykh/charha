@@ -28,8 +28,8 @@ chat = 'https://t.me/CharhaChat'
 DELAY = 60*60
 
 async def send_smile():
+    baza.delete_events()
     if (datetime.now().hour > 8) and (datetime.now().hour < 23):
-        baza.delete_events()
         cu, cs, info_t, info_f = baza.info_admin()
         await bot.send_message('455245688', f'В БД {cu} 👨‍🚀 и {cs} 🏬\n Очищаем БД events\nПолезных-{info_t}, Запросов-{info_f}')
 
@@ -117,7 +117,7 @@ async def save_reg_ikb3(callback_region: types.CallbackQuery, state:FSMContext):
             check = 0
     if net_but:
         ikb4.add(net_but[0])
-        ikb4.add(InlineKeyboardButton('ОБЫЧНЫЙ', callback_data='netAS'))
+    ikb4.add(InlineKeyboardButton('ОБЫЧНЫЙ', callback_data='netAS'))
     await bot.send_message(callback_region.from_user.id, 'Выбираем сеть, либо "ОБЫЧНЫЙ"', reply_markup=ikb4)
 
 
