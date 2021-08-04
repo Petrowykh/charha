@@ -94,7 +94,7 @@ async def save_car_ikb2(callback_car: types.CallbackQuery, state: FSMContext):
     baza.add_events(callback_car.from_user.id, id_shop, car_ok, True)
     period = datetime.now().hour
     baza.create_finehours_shop(id_shop, period, car_ok)
-    await bot.send_message(callback_car.from_user.id, 'Инфоормация добавлена в базу!', reply_markup=kb.kb1)
+    await bot.send_message(callback_car.from_user.id, 'Спасибо!\nИнфоормация добавлена в базу!', reply_markup=kb.kb1)
 
 
 @dp.callback_query_handler(lambda region: region.data.startswith('reg'))
