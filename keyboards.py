@@ -10,13 +10,13 @@ info_but_kb1 = KeyboardButton('Информация ℹ')
 kb1.add(geo_but_kb1, info_but_kb1)
 
 
-ikb2 = InlineKeyboardMarkup(resize_keyboard=True)
+ikb2 = InlineKeyboardMarkup(row_width=2, resize_keyboard=True)
 car0_but_ikb2 = InlineKeyboardButton('Никого', callback_data='car0')
 car1_but_ikb2 = InlineKeyboardButton('1-2 машины', callback_data='car1')
-car2_but_ikb2 = InlineKeyboardButton('Подожду...', callback_data='car2')
-car3_but_ikb2 = InlineKeyboardButton('Час точно', callback_data='car3')
-car4_but_ikb2 = InlineKeyboardButton('Жопа!', callback_data='car4')
-car5_but_ikb2 = InlineKeyboardButton('Жесть!!!', callback_data='car5')
+car2_but_ikb2 = InlineKeyboardButton('3-4 машины', callback_data='car2')
+car3_but_ikb2 = InlineKeyboardButton('5-8 машин', callback_data='car3')
+car4_but_ikb2 = InlineKeyboardButton('10 машин', callback_data='car5')
+car5_but_ikb2 = InlineKeyboardButton('Больше 10', callback_data='car6')
 ikb2.add(car0_but_ikb2, car1_but_ikb2, car2_but_ikb2, car3_but_ikb2, car4_but_ikb2, car5_but_ikb2)
 
 # инлайн выбора региона

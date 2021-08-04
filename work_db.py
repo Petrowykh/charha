@@ -3,7 +3,7 @@ import json
 
 from datetime import datetime, timedelta
 
-delta_request = 2
+delta_request = 1
 delta_info = 1
 
 class Baza:

@@ -80,7 +80,7 @@ async def choose_shop(callback_shop: types.CallbackQuery, state:FSMContext):
     shop_ok = int(callback_shop.data[4:])
     async with state.proxy() as td:
         td['shop_id'] = shop_ok
-    await bot.send_message(callback_shop.from_user.id, 'Как обстановка?', reply_markup=kb.ikb2)
+    await bot.send_message(callback_shop.from_user.id, 'Сколько машин?', reply_markup=kb.ikb2)
 
 
 @dp.callback_query_handler(lambda car: car.data.startswith('car'))
@@ -94,7 +94,7 @@ async def save_car_ikb2(callback_car: types.CallbackQuery, state: FSMContext):
     baza.add_events(callback_car.from_user.id, id_shop, car_ok, True)
     period = datetime.now().hour
     baza.create_finehours_shop(id_shop, period, car_ok)
-    await bot.send_message(callback_car.from_user.id, 'Благодарим за информацию!', reply_markup=kb.kb1)
+    await bot.send_message(callback_car.from_user.id, 'Инфоормация добавлена в базу!', reply_markup=kb.kb1)
 
 
 @dp.callback_query_handler(lambda region: region.data.startswith('reg'))
@@ -148,17 +148,17 @@ async def info_about_shop(callback_addr: types.CallbackQuery, state:FSMContext):
     answer_to_user = f'📭 Адрес : {info[0]}' 
     time_to = f'\n🕑 Время работы: <B> {info[2]}.00 - {info[3]}.00</B>'
     # time_to = time_to + "\n👩🏻‍🦳 Приемка: нет данных" пока убираем
-    time_to = time_to + "\n🛌 Ночная приемка : "
-    if info[4]:
-        time_to = time_to + '✅'
-    else:
-        time_to = time_to + '🚫'
+    # time_to = time_to + "\n🛌 Ночная приемка : "
+    # if info[4]:
+    #     time_to = time_to + '✅'
+    # else:
+    #     time_to = time_to + '🚫'
     time_to = time_to + "\n📋 График приемки : "
     if info[6]:
         time_to = time_to + '✅'
     else:
         time_to = time_to + '🚫'
-    stroka = '\n🚚 <U>Прогноз по времени:</U>\n'
+    stroka = '\n🚚 <U>Статистика по часам</U>\n'
     if statistic:
         fine_hours = json.loads(statistic[0])
         for i in range(0,23):
@@ -168,12 +168,12 @@ async def info_about_shop(callback_addr: types.CallbackQuery, state:FSMContext):
         stroka = stroka + 'Нет информации\n'
     request_user = baza.get_request_count(id_shop)
     if request_user > 1:
-        req = "\n❓ Запросов по магазину :" + str(request_user-1) # -1 потом что запрос тоже уже учтен
+        req = "\n❓ Просмотров за последний час: {request_user-1}" # -1 потом что запрос тоже уже учтен
     else:
-        req = "\n❓ За последние 2 часа запросов не было"
+        req = "\n❓ Информация не запрашивалась"
     charha = baza.get_info_charha(id_shop)
     if charha != None:
-        ch = f'\nℹ Информация за последний час - {charha[0]} 🚛'
+        ch = f'\nℹ Информация за последний час - {charha[0]} 🚛 '
     else:
         ch = "\nℹ Онлайн информации нет 🏳"
     answer = answer_to_user + time_to + stroka + req + ch
