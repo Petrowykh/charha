@@ -29,7 +29,7 @@ DELAY = 60*60
 
 async def send_smile():
     baza.delete_events()
-    if (datetime.now().hour > 8) and (datetime.now().hour < 23) and (datetime.now().minute=45):
+    if (datetime.now().hour > 8) and (datetime.now().hour < 23) and (datetime.now().minute == 45):
         cu, cs, info_t, info_f = baza.info_admin()
         await bot.send_message('455245688', f'В БД {cu} 👨‍🚀 и {cs} 🏬\n Очищаем БД events\nПолезных-{info_t}, Запросов-{info_f}')
 
