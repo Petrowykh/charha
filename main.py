@@ -29,7 +29,7 @@ DELAY = 60*60
 
 async def send_smile():
     baza.delete_events()
-    if (datetime.now().hour > 8) and (datetime.now().hour < 23):
+    if (datetime.now().hour > 8) and (datetime.now().hour < 23) and (datetime.now().minute=45):
         cu, cs, info_t, info_f = baza.info_admin()
         await bot.send_message('455245688', f'В БД {cu} 👨‍🚀 и {cs} 🏬\n Очищаем БД events\nПолезных-{info_t}, Запросов-{info_f}')
 
@@ -80,7 +80,7 @@ async def choose_shop(callback_shop: types.CallbackQuery, state:FSMContext):
     shop_ok = int(callback_shop.data[4:])
     async with state.proxy() as td:
         td['shop_id'] = shop_ok
-    await bot.send_message(callback_shop.from_user.id, 'Сколько машин?', reply_markup=kb.ikb2)
+    await bot.send_message(callback_shop.from_user.id, 'Сколько машин ❓', reply_markup=kb.ikb2)
 
 
 @dp.callback_query_handler(lambda car: car.data.startswith('car'))
@@ -94,7 +94,7 @@ async def save_car_ikb2(callback_car: types.CallbackQuery, state: FSMContext):
     baza.add_events(callback_car.from_user.id, id_shop, car_ok, True)
     period = datetime.now().hour
     baza.create_finehours_shop(id_shop, period, car_ok)
-    await bot.send_message(callback_car.from_user.id, 'Спасибо!\nИнфоормация добавлена в базу!', reply_markup=kb.kb1)
+    await bot.send_message(callback_car.from_user.id, '🤗 Спасибо!\nИнфоормация добавлена в базу!', reply_markup=kb.kb1)
 
 
 @dp.callback_query_handler(lambda region: region.data.startswith('reg'))
@@ -132,8 +132,11 @@ async def save_net_ikb4(callback_net: types.CallbackQuery, state:FSMContext):
         list_address = baza.get_address_shop(region, net_ok, True)
     else:
         list_address = baza.get_address_shop(region, net_ok, False)
-    for i in list_address:
-        ikb5.add(InlineKeyboardButton(f'📌 {i[2]} {i[1]}', callback_data='addr' + str(i[0])))
+    
+    sort_list = sorted(list_address, key=lambda addr: addr[1].split(' ')[1][0]) # Сортировка списка по алфавиту
+    
+    for i in sort_list:
+        ikb5.add(InlineKeyboardButton(f'📌 {i[1]}', callback_data='addr' + str(i[0])))
     await bot.send_message(callback_net.from_user.id, 'Выбираем адрес', reply_markup=ikb5)
 
 
@@ -168,9 +171,9 @@ async def info_about_shop(callback_addr: types.CallbackQuery, state:FSMContext):
         stroka = stroka + 'Нет информации\n'
     request_user = baza.get_request_count(id_shop)
     if request_user > 1:
-        req = "\n❓ Просмотров за последний час: {request_user-1}" # -1 потом что запрос тоже уже учтен
+        req = f'\n🔎 Просмотров за последний час: {request_user-1}' # -1 потом что запрос тоже уже учтен
     else:
-        req = "\n❓ Информация не запрашивалась"
+        req = '\n❓ Информация не запрашивалась'
     charha = baza.get_info_charha(id_shop)
     if charha != None:
         ch = f'\nℹ Информация за последний час - {charha[0]} 🚛 '
