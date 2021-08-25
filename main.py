@@ -148,7 +148,7 @@ async def info_about_shop(callback_addr: types.CallbackQuery, state:FSMContext):
     statistic = baza.get_statistic_shop(id_shop)
     info = baza.get_info_shop(id_shop)
     await bot.send_photo(callback_addr.from_user.id, str(info[5]), str(info[1]))
-    answer_to_user = f'📭 Адрес : {info[0]}' 
+    #answer_to_user = f'📭 Адрес : {info[0]}' 
     time_to = f'\n🕑 Время работы: <B> {info[2]}.00 - {info[3]}.00</B>'
     # time_to = time_to + "\n👩🏻‍🦳 Приемка: нет данных" пока убираем
     # time_to = time_to + "\n🛌 Ночная приемка : "
@@ -156,11 +156,11 @@ async def info_about_shop(callback_addr: types.CallbackQuery, state:FSMContext):
     #     time_to = time_to + '✅'
     # else:
     #     time_to = time_to + '🚫'
-    time_to = time_to + "\n📋 График приемки : "
-    if info[6]:
-        time_to = time_to + '✅'
-    else:
-        time_to = time_to + '🚫'
+    # time_to = time_to + "\n📋 График приемки : "
+    # if info[6]:
+    #     time_to = time_to + '✅'
+    # else:
+    #     time_to = time_to + '🚫'
     stroka = '\n🚚 <U>Статистика по часам</U>\n'
     if statistic:
         fine_hours = json.loads(statistic[0])
@@ -179,7 +179,7 @@ async def info_about_shop(callback_addr: types.CallbackQuery, state:FSMContext):
         ch = f'\nℹ Информация за последний час - {charha[0]} 🚛 '
     else:
         ch = "\nℹ Онлайн информации нет 🏳"
-    answer = answer_to_user + time_to + stroka + req + ch
+    answer = stroka + req + ch
     await bot.send_message(callback_addr.from_user.id, answer, reply_markup=kb.kb1) 
 
 
